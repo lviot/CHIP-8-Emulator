@@ -1,4 +1,4 @@
-# CHIP-8 interpretor
+# CHIP-8 interpreter
 ## Description
 Emulator tu run CHIP-8 games, written in C
 ### Compilation
