@@ -8,14 +8,16 @@
 #ifndef CHIP_8_OPCODE_H
 #define CHIP_8_OPCODE_H
 
-#define NB_OPCODE           35
-#define GET_OPCODE(mem, pc) (mem[pc] << 8 | mem[pc + 1])
+#include "types.h"
 
-typedef int (*fptr)(unsigned short);
+#define NB_OPCODE           35
+#define GET_OPCODE(mem, pc) (((mem[pc]) << 8u) | (mem[pc + 1]))
+
+typedef int (*fptr)(ushort);
 
 struct opcode_map_s
 {
-    unsigned short value;
+    ushort value;
     fptr func;
 };
 
@@ -25,23 +27,23 @@ extern const opcode_map_t map[NB_OPCODE];
 
 extern const fptr opcodes[NB_OPCODE];
 
-fptr get_function(unsigned short value);
+fptr get_function(ushort value);
 
-int opcode_0(unsigned short);
-int opcode_1(unsigned short);
-int opcode_2(unsigned short);
-int opcode_3(unsigned short);
-int opcode_4(unsigned short);
-int opcode_5(unsigned short);
-int opcode_6(unsigned short);
-int opcode_7(unsigned short);
-int opcode_8(unsigned short);
-int opcode_9(unsigned short);
-int opcode_A(unsigned short);
-int opcode_B(unsigned short);
-int opcode_C(unsigned short);
-int opcode_D(unsigned short);
-int opcode_E(unsigned short);
-int opcode_F(unsigned short);
+int chip_syscall(ushort);
+int jump(ushort);
+int call(ushort);
+int skip_if_val_equal(ushort);
+int skip_if_val_not_equal(ushort);
+int skip_if_reg_equal(ushort);
+int load_val(ushort);
+int add(ushort);
+int opcode_8(ushort);
+int skip_if_reg_not_equal(ushort);
+int load_in_i(ushort);
+int jump_reg(ushort);
+int gen_rand(ushort);
+int draw(ushort);
+int key_pressed(ushort);
+int opcode_F(ushort);
 
 #endif //CHIP_8_OPCODE_H
