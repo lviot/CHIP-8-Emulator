@@ -79,7 +79,6 @@ int exec_next_instruction(void)
     ushort opcode = GET_OPCODE(chip->memory, chip->pc);
     fptr func = get_function(opcode & 0xF000u);
 
-    printf("%x %x, pc: %d, next: %x\n", opcode, (chip->memory[chip->pc]) << 8u, chip->pc, chip->memory[chip->pc + 2] << 8u);
     if (func && func(opcode & 0x0FFFu) == 0) {
         return 0;
     }
