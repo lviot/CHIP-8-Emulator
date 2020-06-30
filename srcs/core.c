@@ -6,8 +6,30 @@
 */
 
 #include <string.h>
+#include <unistd.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 #include "chip8.h"
+
+const uchar font_sprites[80] = {
+        0xF0, 0x90, 0x90, 0x90, 0xF0, //0
+        0x20, 0x60, 0x20, 0x20, 0x70, // 1
+        0xF0, 0x10, 0xF0, 0x80, 0xF0, // 2
+        0xF0, 0x10, 0xF0, 0x10, 0xF0, // 3
+        0x90, 0x90, 0xF0, 0x10, 0x10, // 4
+        0xF0, 0x80, 0xF0, 0x10, 0xF0, // 5
+        0xF0, 0x80, 0xF0, 0x90, 0xF0, // 6
+        0xF0, 0x10, 0x20, 0x40, 0x40, // 7
+        0xF0, 0x90, 0xF0, 0x90, 0xF0, // 8
+        0xF0, 0x90, 0xF0, 0x10, 0xF0, // 9
+        0xF0, 0x90, 0xF0, 0x90, 0x90, // A
+        0xE0, 0x90, 0xE0, 0x90, 0xE0, // B
+        0xF0, 0x80, 0x80, 0x80, 0xF0, // C
+        0xE0, 0x90, 0x90, 0x90, 0xE0, // D
+        0xF0, 0x80, 0xF0, 0x80, 0xF0, // E
+        0xF0, 0x80, 0xF0, 0x80, 0x80  // F
+};
 
 chip8_t *get_chip(void)
 {
@@ -16,13 +38,17 @@ chip8_t *get_chip(void)
     return &chip;
 }
 
-int initialize(const char *filepath)
+int init_chip(const char *filepath)
 {
     chip8_t *chip = get_chip();
     FILE *stream = NULL;
 
-    if (filepath == NULL)
+    srand(time(NULL));
+
+    chip->graphics = init_graphics(WIN_WIDTH, WIN_HEIGHT);
+    if (chip->graphics == NULL || filepath == NULL) {
         return -1;
+    }
 
     stream = fopen(filepath, "rb");
     if (stream == NULL) {
@@ -31,37 +57,58 @@ int initialize(const char *filepath)
 
     memset(chip->memory, 0, MEM_SIZE);
     memset(chip->registers, 0, REG_NB);
+    memset(chip->stack, 0, STACK_SIZE);
+    memset(chip->keys, 0, KEY_NB);
+    memset(chip->timers, 0, 2);
 
-    for (size_t i = MEM_START; i < CHAR_SIZE; ++i) {
-        chip->memory[i] = font[i];
+    for (uint i = 0; i < CHAR_SIZE; ++i) {
+        chip->memory[MEM_FONT + i] = font_sprites[i];
     }
 
     fread(&chip->memory[MEM_PROG], 1, MEM_SIZE - MEM_PROG, stream);
 
     chip->pc = MEM_PROG;
+    chip->sp = 0;
+    chip->mem_addr_register = 0;
     return 0;
 }
 
 int exec_next_instruction(void)
 {
     chip8_t *chip = get_chip();
-    unsigned short opcode = GET_OPCODE(chip->memory, chip->pc);
-    fptr func = get_function(opcode & 0xF000);
+    ushort opcode = GET_OPCODE(chip->memory, chip->pc);
+    fptr func = get_function(opcode & 0xF000u);
 
-    if (func && func(opcode & 0x0FFF) == 0) {
-        chip->pc += 2;
+    printf("%x %x, pc: %d, next: %x\n", opcode, (chip->memory[chip->pc]) << 8u, chip->pc, chip->memory[chip->pc + 2] << 8u);
+    if (func && func(opcode & 0x0FFFu) == 0) {
         return 0;
     }
     return -1;
 }
 
-int execution_loop(void)
+void decrease_timers(void)
 {
     chip8_t *chip = get_chip();
 
-    while (chip->pc < MEM_SIZE) {
+    if (get_chip()->timers[DT] > 0)
+        get_chip()->timers[DT]--;
+    if (get_chip()->timers[ST] > 0)
+        get_chip()->timers[ST]--;
+}
+
+int execution_loop(void)
+{
+    while (!catch_quit_event()) {
         if (exec_next_instruction() < 0)
             return 84;
+        if (get_chip()->graphics->render_flag) {
+            clear_screen();
+            render();
+            get_chip()->graphics->render_flag = false;
+        }
+        get_keys_states();
+        decrease_timers();
+        usleep(1200);
     }
     return 0;
 }

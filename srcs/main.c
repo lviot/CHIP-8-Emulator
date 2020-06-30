@@ -10,9 +10,13 @@
 
 int main(int argc, char *argv[])
 {
-    if (initialize(argv[1])) {
+    if (init_chip(argv[1])) {
         fprintf(stderr, "Cannot access requested file.\n");
         return 84;
     }
-    return execution_loop();
+    if (execution_loop()) {
+        return 84;
+    }
+    destroy_graphics();
+    return 0;
 }
