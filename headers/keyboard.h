@@ -8,4 +8,11 @@
 #ifndef CHIP_8_KEYBOARD_H
 #define CHIP_8_KEYBOARD_H
 
+#include "chip8.h"
+
+SDL_Scancode get_scancode(uchar key);
+bool is_key_pressed(uchar key);
+uchar wait_for_keypress(void);
+void get_keys_states(void);
+
 #endif //CHIP_8_KEYBOARD_H
