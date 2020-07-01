@@ -70,7 +70,7 @@ int init_chip(const char *filepath)
     chip->pc = MEM_PROG;
     chip->sp = 0;
     chip->mem_op_7XXXr_register = 0;
-    return 0;
+    return fclose(stream);
 }
 
 void exec_next_instruction(void)
