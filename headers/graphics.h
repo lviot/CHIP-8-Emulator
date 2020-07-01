@@ -35,6 +35,6 @@ void destroy_graphics(void);
 void op_DXXX_pixel(ushort x, ushort y);
 void clear_screen(void);
 void render(void);
-void op_DXXX_sprite(uchar x, uchar y, uchar mem_op_7XXXr);
+void op_DXXX_sprite(uchar x, uchar y, uchar mem_args);
 
 #endif //CHIP_8_GRAPHICS_H

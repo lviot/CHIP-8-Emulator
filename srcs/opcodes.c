@@ -43,20 +43,20 @@ void op_0XXX(ushort args)
     chip->pc += 2;
 }
 
-void op_1XXX(ushort op_7XXXr)
+void op_1XXX(ushort args)
 {
     chip8_t *chip = get_chip();
 
-    chip->pc = op_7XXXr;
+    chip->pc = args;
 }
 
-void op_2XXX(ushort op_7XXXr)
+void op_2XXX(ushort args)
 {
     chip8_t *chip = get_chip();
 
     chip->stack[chip->sp] = chip->pc;
     chip->sp++;
-    chip->pc = op_7XXXr;
+    chip->pc = args;
 }
 
 void op_3XXX(ushort args)
@@ -200,13 +200,13 @@ void op_DXXX(ushort args)
     chip8_t *chip = get_chip();
     uchar regX = chip->registers[(args & 0xF00u) >> 8u];
     uchar regY = chip->registers[(args & 0x0F0u) >> 4u];
-    uchar start_op_7XXXr = chip->mem_op_addr_register;
+    uchar start_args = chip->mem_op_addr_register;
     uchar n = args & 0x00Fu;
 
     CARRY(chip) = 0;
     for (uchar i = 0; i < n; ++i) {
         for (uchar mask = 0b10000000u, tmp = regX; mask > 0; mask >>= 1u, ++tmp) {
-            if (chip->memory[i + start_op_7XXXr] & mask) {
+            if (chip->memory[i + start_args] & mask) {
                 if (chip->graphics->frame_buffer[CHIP_WIDTH * (regY + i) + tmp])
                     CARRY(chip) = 1;
                 chip->graphics->frame_buffer[CHIP_WIDTH * (regY + i) + tmp] ^= 1u;
