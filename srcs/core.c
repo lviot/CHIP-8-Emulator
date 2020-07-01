@@ -77,15 +77,7 @@ void exec_next_instruction(void)
 {
     ushort opcode = GET_OPCODE(get_chip());
 
-<<<<<<< HEAD
-    //printf("%x %x, pc: %d, next: %x\n", opcode, (chip->memory[chip->pc]) << 8u, chip->pc, chip->memory[chip->pc + 2] << 8u);
     opcodes[(opcode & 0xF000u) >> 12u](opcode & 0x0FFFu);
-=======
-    if (func && func(opcode & 0x0FFFu) == 0) {
-        return 0;
-    }
-    return -1;
->>>>>>> b08ac0e1dcd4c5bd336c6d8d8c439691a0a0b214
 }
 
 void decrease_timers(void)
