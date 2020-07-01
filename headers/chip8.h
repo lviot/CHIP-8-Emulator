@@ -34,7 +34,7 @@ struct chip8_s {
     uchar keys[KEY_NB];
     ushort stack[STACK_SIZE];
 
-    ushort mem_op_7XXXr_register;
+    ushort mem_op_addr_register;
     ushort pc;
     uchar sp;
     uchar timers[2];

@@ -175,7 +175,7 @@ void op_AXXX(ushort args)
 {
     chip8_t *chip = get_chip();
 
-    chip->mem_op_7XXXr_register = args;
+    chip->mem_op_addr_register = args;
     chip->pc += 2;
 }
 
@@ -200,7 +200,7 @@ void op_DXXX(ushort args)
     chip8_t *chip = get_chip();
     uchar regX = chip->registers[(args & 0xF00u) >> 8u];
     uchar regY = chip->registers[(args & 0x0F0u) >> 4u];
-    uchar start_op_7XXXr = chip->mem_op_7XXXr_register;
+    uchar start_op_7XXXr = chip->mem_op_addr_register;
     uchar n = args & 0x00Fu;
 
     CARRY(chip) = 0;
@@ -253,27 +253,27 @@ void op_FXXX(ushort args)
             chip->timers[ST] = *regX;
             break;
         case 0x1E:
-            chip->mem_op_7XXXr_register += *regX;
+            chip->mem_op_addr_register += *regX;
             break;
         case 0x29:
-            chip->mem_op_7XXXr_register = *regX * FONT_SIZE;
+            chip->mem_op_addr_register = *regX * FONT_SIZE;
             break;
         case 0x33:
-            chip->memory[chip->mem_op_7XXXr_register] = *regX % 10;
-            chip->memory[chip->mem_op_7XXXr_register + 1] = (*regX / 10) % 10;
-            chip->memory[chip->mem_op_7XXXr_register + 2] = (*regX / 100) % 10;
+            chip->memory[chip->mem_op_addr_register] = *regX % 10;
+            chip->memory[chip->mem_op_addr_register + 1] = (*regX / 10) % 10;
+            chip->memory[chip->mem_op_addr_register + 2] = (*regX / 100) % 10;
             break;
         case 0x55:
             for (uint i = 0; i < ((args & 0xF00u) >> 8u); ++i) {
-                chip->memory[chip->mem_op_7XXXr_register + i] = chip->registers[i];
+                chip->memory[chip->mem_op_addr_register + i] = chip->registers[i];
             }
-            chip->mem_op_7XXXr_register += ((args & 0xF00u) >> 8u) + 1;
+            chip->mem_op_addr_register += ((args & 0xF00u) >> 8u) + 1;
             break;
         case 0x65:
             for (uint i = 0; i < ((args & 0xF00u) >> 8u); ++i) {
-                chip->registers[i] = chip->memory[chip->mem_op_7XXXr_register + i];
+                chip->registers[i] = chip->memory[chip->mem_op_addr_register + i];
             }
-            chip->mem_op_7XXXr_register += ((args & 0xF00u) >> 8u) + 1;
+            chip->mem_op_addr_register += ((args & 0xF00u) >> 8u) + 1;
             break;
     }
     chip->pc += 2;
