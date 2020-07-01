@@ -41,7 +41,7 @@ void get_keys_states(void)
     }
 }
 
-bool is_key_pressed(uchar key)
+bool is_op_EXXX(uchar key)
 {
     return get_chip()->keys[key];
 }

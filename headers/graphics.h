@@ -32,9 +32,9 @@ typedef struct graphics_s graphics_t;
 graphics_t *init_graphics(int width, int height);
 bool catch_quit_event(void);
 void destroy_graphics(void);
-void draw_pixel(ushort x, ushort y);
+void op_DXXX_pixel(ushort x, ushort y);
 void clear_screen(void);
 void render(void);
-void draw_sprite(uchar x, uchar y, uchar mem_addr);
+void op_DXXX_sprite(uchar x, uchar y, uchar mem_op_7XXXr);
 
 #endif //CHIP_8_GRAPHICS_H

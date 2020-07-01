@@ -1,19 +1,14 @@
+include sources.mk
+include tests.mk
+
 NAME	= CHIP-8
 
-CC	= gcc
+CC		= gcc
 
-RM	= rm -f
+RM		= rm -f
 
-SRCS	=	./srcs/core.c			\
-	 		./srcs/main.c			\
-	 		./srcs/graphics.c		\
-	 		./srcs/keyboard.c		\
-	 		./srcs/opcodes.c
-
-OBJS	= $(SRCS:.c=.o)
-
-CFLAGS = -I ./headers/ -I/Library/Frameworks/SDL2.framework/Headers
-CFLAGS += -Wall -Wextra
+CFLAGS 	= -I ./headers/ -I/Library/Frameworks/SDL2.framework/Headers
+CFLAGS 	+= -Wall -Wextra
 LDFLAGS = -L/Library/Frameworks/SDL2.framework/ -lSDL2
 
 all: $(NAME)
@@ -21,11 +16,14 @@ all: $(NAME)
 $(NAME): $(OBJS)
 	 $(CC) $(OBJS) -o $(NAME) $(LDFLAGS)
 
+tests: $(T_OBJS)
+	$(CC) $(T_OBJS) -o $(T_NAME) $(LDFLAGS)
+
 clean:
-	$(RM) $(OBJS)
+	$(RM) $(OBJS) $(T_OBJS)
 
 fclean: clean
-	$(RM) $(NAME)
+	$(RM) $(NAME) $(TNAME)
 
 re: fclean all
 

@@ -34,7 +34,7 @@ struct chip8_s {
     uchar keys[KEY_NB];
     ushort stack[STACK_SIZE];
 
-    ushort mem_addr_register;
+    ushort mem_op_7XXXr_register;
     ushort pc;
     uchar sp;
     uchar timers[2];
@@ -44,7 +44,7 @@ typedef struct chip8_s chip8_t;
 
 int init_chip(const char *filepath);
 chip8_t *get_chip(void);
-int exec_next_instruction(void);
+void exec_next_instruction(void);
 int execution_loop(void);
 
 #endif //CHIP_8_CHIP8_H

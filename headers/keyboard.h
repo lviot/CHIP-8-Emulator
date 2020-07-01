@@ -11,7 +11,7 @@
 #include "chip8.h"
 
 SDL_Scancode get_scancode(uchar key);
-bool is_key_pressed(uchar key);
+bool is_op_EXXX(uchar key);
 uchar wait_for_keypress(void);
 void get_keys_states(void);
 

@@ -69,38 +69,32 @@ int init_chip(const char *filepath)
 
     chip->pc = MEM_PROG;
     chip->sp = 0;
-    chip->mem_addr_register = 0;
+    chip->mem_op_7XXXr_register = 0;
     return 0;
 }
 
-int exec_next_instruction(void)
+void exec_next_instruction(void)
 {
-    chip8_t *chip = get_chip();
-    ushort opcode = GET_OPCODE(chip->memory, chip->pc);
-    fptr func = get_function(opcode & 0xF000u);
+    ushort opcode = GET_OPCODE(get_chip());
 
-    printf("%x %x, pc: %d, next: %x\n", opcode, (chip->memory[chip->pc]) << 8u, chip->pc, chip->memory[chip->pc + 2] << 8u);
-    if (func && func(opcode & 0x0FFFu) == 0) {
-        return 0;
-    }
-    return -1;
+    //printf("%x %x, pc: %d, next: %x\n", opcode, (chip->memory[chip->pc]) << 8u, chip->pc, chip->memory[chip->pc + 2] << 8u);
+    opcodes[(opcode & 0xF000u) >> 12u](opcode & 0x0FFFu);
 }
 
 void decrease_timers(void)
 {
     chip8_t *chip = get_chip();
 
-    if (get_chip()->timers[DT] > 0)
-        get_chip()->timers[DT]--;
-    if (get_chip()->timers[ST] > 0)
-        get_chip()->timers[ST]--;
+    if (chip->timers[DT] > 0)
+        chip->timers[DT]--;
+    if (chip->timers[ST] > 0)
+        chip->timers[ST]--;
 }
 
 int execution_loop(void)
 {
     while (!catch_quit_event()) {
-        if (exec_next_instruction() < 0)
-            return 84;
+        exec_next_instruction();
         if (get_chip()->graphics->render_flag) {
             clear_screen();
             render();

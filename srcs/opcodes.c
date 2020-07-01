@@ -6,70 +6,60 @@
 */
 
 #include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 #include "chip8.h"
 
-const opcode_map_t map[NB_OPCODE] = {
-        {0x0000, chip_syscall},
-        {0x1000, jump},
-        {0x2000, call},
-        {0x3000, skip_if_val_equal},
-        {0x4000, skip_if_val_not_equal},
-        {0x5000, skip_if_reg_equal},
-        {0x6000, load_val},
-        {0x7000, add},
-        {0x8000, opcode_8},
-        {0x9000, skip_if_reg_not_equal},
-        {0xA000, load_in_i},
-        {0xB000, jump_reg},
-        {0xC000, gen_rand},
-        {0xD000, draw},
-        {0xE000, key_pressed},
-        {0xF000, opcode_F}
+const fptr opcodes[NB_OPCODE] = {
+        [0x0] = op_0XXX,
+        [0x1] = op_1XXX,
+        [0x2] = op_2XXX,
+        [0x3] = op_3XXX,
+        [0x4] = op_4XXX,
+        [0x5] = op_5XXX,
+        [0x6] = op_6XXX,
+        [0x7] = op_7XXX,
+        [0x8] = op_8XXX,
+        [0x9] = op_9XXX,
+        [0xA] = op_AXXX,
+        [0xB] = op_BXXX,
+        [0xC] = op_CXXX,
+        [0xD] = op_DXXX,
+        [0xE] = op_EXXX,
+        [0xF] = op_FXXX
 };
 
-fptr get_function(ushort value)
-{
-    for (size_t i = 0; i < NB_OPCODE; ++i) {
-        if (map[i].value == value) {
-            return map[i].func;
-        }
-    }
-    return NULL;
-}
-
-int chip_syscall(ushort args)
+void op_0XXX(ushort args)
 {
     chip8_t *chip = get_chip();
 
     if (args == 0x0E0) {
-        //clear_screen();
+        memset(chip->graphics->frame_buffer, 0, CHIP_WIDTH * CHIP_HEIGHT);
+        chip->graphics->render_flag = true;
     } else if (args == 0x0EE) {
         chip->sp--;
         chip->pc = chip->stack[chip->sp];
     }
     chip->pc += 2;
-    return 0;
 }
 
-int jump(ushort addr)
+void op_1XXX(ushort op_7XXXr)
 {
     chip8_t *chip = get_chip();
 
-    chip->pc = addr;
-    return 0;
+    chip->pc = op_7XXXr;
 }
 
-int call(ushort addr)
+void op_2XXX(ushort op_7XXXr)
 {
     chip8_t *chip = get_chip();
 
     chip->stack[chip->sp] = chip->pc;
     chip->sp++;
-    chip->pc = addr;
-    return 0;
+    chip->pc = op_7XXXr;
 }
 
-int skip_if_val_equal(ushort args)
+void op_3XXX(ushort args)
 {
     chip8_t *chip = get_chip();
 
@@ -77,10 +67,9 @@ int skip_if_val_equal(ushort args)
         chip->pc += 2;
     }
     chip->pc += 2;
-    return 0;
 }
 
-int skip_if_val_not_equal(ushort args)
+void op_4XXX(ushort args)
 {
     chip8_t *chip = get_chip();
 
@@ -88,49 +77,44 @@ int skip_if_val_not_equal(ushort args)
         chip->pc += 2;
     }
     chip->pc += 2;
-    return 0;
 }
 
-int skip_if_reg_equal(ushort args)
+void op_5XXX(ushort args)
 {
     chip8_t *chip = get_chip();
 
     if ((args & 0x00Fu) != 0)
-        return 0;
+        return;
 
     if (chip->registers[((args & 0xF00u) >> 8u)] == chip->registers[((args & 0x0F0u) >> 4u)]) {
         chip->pc += 2;
     }
     chip->pc += 2;
-    return 0;
 }
 
-int load_val(ushort args)
+void op_6XXX(ushort args)
 {
     chip8_t *chip = get_chip();
 
     chip->registers[(args & 0xF00u) >> 8u] = (args & 0x0FFu);
     chip->pc += 2;
-    return 0;
 }
 
-int add(ushort args)
+void op_7XXX(ushort args)
 {
     chip8_t *chip = get_chip();
     uchar index = (args & 0xF00u) >> 8u;
 
     chip->registers[index] += (args & 0x0FFu);
     chip->pc += 2;
-    return 0;
 }
 
-int opcode_8(ushort args)
+void op_8XXX(ushort args)
 {
     chip8_t *chip = get_chip();
     uchar *regX = &chip->registers[(args & 0xF00u) >> 8u];
     uchar *regY = &chip->registers[(args & 0x0F0u) >> 4u];
 
-    CARRY(chip) = 0;
     switch (args & 0x00Fu) {
         case 0x0:
             // LD
@@ -150,8 +134,8 @@ int opcode_8(ushort args)
             break;
         case 0x4:
             // ADD
-            CARRY(chip) = (*regX + *regY > 0x100 ? 0x1: 0x0);
-            *regX += *regY;
+            CARRY(chip) = (*regX + *regY > 0xff ? 0x1: 0x0);
+            *regX = (*regX + *regY) % 0x100u;
             break;
         case 0x5:
             // SUB
@@ -165,73 +149,64 @@ int opcode_8(ushort args)
             break;
         case 0x7:
             // SUBN
-            CARRY(chip) = (*regY > *regX ? 0x1 : 0x0);
+            CARRY(chip) = (*regX > *regY ? 0x1 : 0x0);
             *regX = *regY - *regX;
             break;
         case 0xE:
             //SHL
-            CARRY(chip) = *regX & 0b00000001u;
+            CARRY(chip) = (*regX & 0b10000000u ? 1 : 0);
             *regX = *regY << 1u;
             break;
     }
     chip->pc += 2;
-    return 0;
 }
 
-int skip_if_reg_not_equal(ushort args)
+void op_9XXX(ushort args)
 {
     chip8_t *chip = get_chip();
-
-    if ((args & 0x00Fu) != 0)
-        return 0;
 
     if (chip->registers[((args & 0xF00u) >> 8u)] != chip->registers[((args & 0x0F0u) >> 4u)]) {
         chip->pc += 2;
     }
     chip->pc += 2;
-    return 0;
 }
 
-int load_in_i(ushort args)
+void op_AXXX(ushort args)
 {
     chip8_t *chip = get_chip();
 
-    chip->mem_addr_register = args;
+    chip->mem_op_7XXXr_register = args;
     chip->pc += 2;
-    return 0;
 }
 
-int jump_reg(ushort args)
+void op_BXXX(ushort args)
 {
-    printf("jump reg\n");
     chip8_t *chip = get_chip();
 
     chip->pc = chip->registers[0] + args;
-    return 0;
 }
 
-int gen_rand(ushort args)
+void op_CXXX(ushort args)
 {
     chip8_t *chip = get_chip();
-    uchar random_nb = rand() % 0xFE;
+    uchar random_nb = rand() % 0x100;
 
     chip->registers[((args & 0xF00u) >> 8u)] = (random_nb & (args & 0x0FFu));
     chip->pc += 2;
-    return 0;
 }
 
-int draw(ushort args)
+void op_DXXX(ushort args)
 {
     chip8_t *chip = get_chip();
     uchar regX = chip->registers[(args & 0xF00u) >> 8u];
     uchar regY = chip->registers[(args & 0x0F0u) >> 4u];
-    uchar start_addr = chip->mem_addr_register;
+    uchar start_op_7XXXr = chip->mem_op_7XXXr_register;
     uchar n = args & 0x00Fu;
 
     CARRY(chip) = 0;
     for (uchar i = 0; i < n; ++i) {
         for (uchar mask = 0b10000000u, tmp = regX; mask > 0; mask >>= 1u, ++tmp) {
-            if (chip->memory[MEM_FONT + i + start_addr] & mask) {
+            if (chip->memory[i + start_op_7XXXr] & mask) {
                 if (chip->graphics->frame_buffer[CHIP_WIDTH * (regY + i) + tmp])
                     CARRY(chip) = 1;
                 chip->graphics->frame_buffer[CHIP_WIDTH * (regY + i) + tmp] ^= 1u;
@@ -240,28 +215,26 @@ int draw(ushort args)
         }
     }
     chip->pc += 2;
-    return 0;
 }
 
-int key_pressed(ushort args)
+void op_EXXX(ushort args)
 {
     chip8_t *chip = get_chip();
 
     switch (args & 0x0FFu) {
         case 0x9E:
-            if (is_key_pressed(chip->registers[(args & 0xF00u) >> 8u]))
+            if (is_op_EXXX(chip->registers[(args & 0xF00u) >> 8u]))
                 chip->pc += 2;
             break;
         case 0xA1:
-            if (!is_key_pressed(chip->registers[(args & 0xF00u) >> 8u]))
+            if (!is_op_EXXX(chip->registers[(args & 0xF00u) >> 8u]))
                 chip->pc += 2;
             break;
     }
     chip->pc += 2;
-    return 0;
 }
 
-int opcode_F(ushort args)
+void op_FXXX(ushort args)
 {
     chip8_t *chip = get_chip();
     uchar *regX = &chip->registers[(args & 0xF00u) >> 8u];
@@ -280,29 +253,28 @@ int opcode_F(ushort args)
             chip->timers[ST] = *regX;
             break;
         case 0x1E:
-            chip->mem_addr_register += *regX;
+            chip->mem_op_7XXXr_register += *regX;
             break;
         case 0x29:
-            chip->mem_addr_register = MEM_FONT + *regX * FONT_SIZE;
+            chip->mem_op_7XXXr_register = *regX * FONT_SIZE;
             break;
         case 0x33:
-            chip->memory[chip->mem_addr_register] = *regX % 10;
-            chip->memory[chip->mem_addr_register + 1] = (*regX / 10) % 10;
-            chip->memory[chip->mem_addr_register + 2] = (*regX / 100) % 10;
+            chip->memory[chip->mem_op_7XXXr_register] = *regX % 10;
+            chip->memory[chip->mem_op_7XXXr_register + 1] = (*regX / 10) % 10;
+            chip->memory[chip->mem_op_7XXXr_register + 2] = (*regX / 100) % 10;
             break;
         case 0x55:
             for (uint i = 0; i < ((args & 0xF00u) >> 8u); ++i) {
-                chip->memory[chip->mem_addr_register + i] = chip->registers[i];
+                chip->memory[chip->mem_op_7XXXr_register + i] = chip->registers[i];
             }
-            chip->mem_addr_register += ((args & 0xF00u) >> 8u) + 1;
+            chip->mem_op_7XXXr_register += ((args & 0xF00u) >> 8u) + 1;
             break;
         case 0x65:
             for (uint i = 0; i < ((args & 0xF00u) >> 8u); ++i) {
-                chip->registers[i] = chip->memory[chip->mem_addr_register + i];
+                chip->registers[i] = chip->memory[chip->mem_op_7XXXr_register + i];
             }
-            chip->mem_addr_register += ((args & 0xF00u) >> 8u) + 1;
+            chip->mem_op_7XXXr_register += ((args & 0xF00u) >> 8u) + 1;
             break;
     }
     chip->pc += 2;
-    return 0;
 }
