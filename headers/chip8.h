@@ -20,7 +20,7 @@
 #define KEY_NB          16
 #define CARRY(chip)     (chip->registers[REG_NB - 1])
 
-#define MEM_FONT        0x000
+#define MEM_FONT        0x000 // 0x050
 #define MEM_PROG        0x200
 
 #define DT              0
@@ -34,7 +34,7 @@ struct chip8_s {
     uchar keys[KEY_NB];
     ushort stack[STACK_SIZE];
 
-    ushort mem_op_addr_register;
+    ushort addr_register;
     ushort pc;
     uchar sp;
     uchar timers[2];
@@ -46,5 +46,7 @@ int init_chip(const char *filepath);
 chip8_t *get_chip(void);
 void exec_next_instruction(void);
 int execution_loop(void);
+
+unsigned int make_seed(void);
 
 #endif //CHIP_8_CHIP8_H
