@@ -13,7 +13,7 @@
 #include "chip8.h"
 
 const uchar font_sprites[80] = {
-        0xF0, 0x90, 0x90, 0x90, 0xF0, //0
+        0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
         0x20, 0x60, 0x20, 0x20, 0x70, // 1
         0xF0, 0x10, 0xF0, 0x80, 0xF0, // 2
         0xF0, 0x10, 0xF0, 0x10, 0xF0, // 3
@@ -43,7 +43,7 @@ int init_chip(const char *filepath)
     chip8_t *chip = get_chip();
     FILE *stream = NULL;
 
-    srand(time(NULL));
+    srand(make_seed());
 
     chip->graphics = init_graphics(WIN_WIDTH, WIN_HEIGHT);
     if (chip->graphics == NULL || filepath == NULL) {
@@ -69,7 +69,14 @@ int init_chip(const char *filepath)
 
     chip->pc = MEM_PROG;
     chip->sp = 0;
-    chip->mem_op_addr_register = 0;
+    chip->addr_register = 0;
+
+    FILE *dump = fopen("dump", "wb");
+
+    if (dump) {
+        fwrite(&chip->memory, sizeof(*chip->memory), MEM_SIZE, dump);
+        fclose(dump);
+    }
     return fclose(stream);
 }
 
