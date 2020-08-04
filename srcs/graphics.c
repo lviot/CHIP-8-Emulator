@@ -61,7 +61,7 @@ void clear_screen(void)
  * Actually doesn't op_DXXX a pixel, but a square
  * square size is deduced from screen size/ratio
  */
-void op_DXXX_pixel(ushort x, ushort y)
+void draw_pixel(ushort x, ushort y)
 {
     chip8_t *chip = get_chip();
 
@@ -77,7 +77,7 @@ void render(void)
 
     for (uint i = 0; i < CHIP_WIDTH * CHIP_HEIGHT; ++i) {
         if (chip->graphics->frame_buffer[i]) {
-            op_DXXX_pixel(i % CHIP_WIDTH, i / CHIP_WIDTH);
+            draw_pixel(i % CHIP_WIDTH, i / CHIP_WIDTH);
         }
     }
     SDL_RenderPresent(chip->graphics->renderer);

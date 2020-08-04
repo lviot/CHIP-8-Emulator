@@ -32,7 +32,7 @@ typedef struct graphics_s graphics_t;
 graphics_t *init_graphics(int width, int height);
 bool catch_quit_event(void);
 void destroy_graphics(void);
-void op_DXXX_pixel(ushort x, ushort y);
+void draw_pixel(ushort x, ushort y);
 void clear_screen(void);
 void render(void);
 void op_DXXX_sprite(uchar x, uchar y, uchar mem_args);
