@@ -10,7 +10,11 @@ cmake .. && cmake --build .       // compile project
 ```
 ### Usage
 ```shell script
-./CHIP-8 ./path/to/rom/file
+CHIP-8 -f <path_to_rom> [options]
+
+options:
+  -r, --ratio: pixel size ratio
+  -l, --log: log file path
 ```
 ### Upcoming improvements
 - Keyboard management in pure C (No dependence to the graphic library)
