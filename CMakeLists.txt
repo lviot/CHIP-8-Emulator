@@ -12,6 +12,15 @@ include_directories(headers ${SDL2_INCLUDE_DIR})
 
 add_executable(CHIP_8
         ${SDL_LIBRARY}
-        srcs/main.c srcs/logger.c srcs/opcodes.c headers/opcode.h headers/font.h srcs/core.c srcs/graphics.c headers/graphics.h headers/types.h headers/keyboard.h srcs/keyboard.c srcs/utils.c srcs/audio.c headers/logger.h)
+        srcs/main.c
+        srcs/logger.c
+        srcs/opcodes.c
+        headers/opcode.h
+        headers/font.h
+        srcs/core.c
+        srcs/graphics.c
+        srcs/keyboard.c
+        srcs/utils.c
+        srcs/audio.c)
 
 target_link_libraries(CHIP_8 ${CONAN_LIBS})
