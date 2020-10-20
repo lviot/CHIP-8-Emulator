@@ -2,3 +2,4 @@
 Vagrantfile
 cmake-build-debug
 .vagrant
+build
