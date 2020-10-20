@@ -69,9 +69,7 @@ int init_chip(const char *filepath)
     memset(chip->keys, 0, KEY_NB);
     memset(chip->timers, 0, 2);
 
-    for (uint i = 0; i < CHAR_SIZE; ++i) {
-        chip->memory[MEM_FONT + i] = font_sprites[i];
-    }
+    memcpy(&chip->memory[MEM_FONT], font_sprites, CHAR_SIZE);
 
     fread(&chip->memory[MEM_PROG], 1, MEM_SIZE - MEM_PROG, stream);
 
