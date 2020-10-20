@@ -21,4 +21,4 @@ options:
 ### 🛠 Tests
 Made with criterion, and so not cross-platform. In progress.
 
-Lots of improvements in comming! 🥳
+Upcoming improvements! 🥳
