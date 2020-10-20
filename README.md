@@ -1,10 +1,12 @@
 # CHIP-8 interpreter
 ## Description
 CHIP-8 interpretor to run CHIP-8 games, written in C.
-Compile exclusively on macOS for now.
+Cross-platform compilation (see *How-To compile*).
 ### Compilation
 ```shell script
-make
+mkdir build && cd build           // create build directory
+conan install .. --build=missing  // install project dependencies
+cmake .. && cmake --build .       // compile project
 ```
 ### Usage
 ```shell script
@@ -15,5 +17,4 @@ make
 - Clock based game loop frequency
 
 ### Upcoming features
-- Cross platform compilation with CMake
 - Command line arguments parsing (options like screen-size, super-mode...)
