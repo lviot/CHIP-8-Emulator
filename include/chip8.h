@@ -56,7 +56,7 @@ struct exec_args_s
 
 typedef struct exec_args_s exec_args_t;
 
-int init_chip(const char *);
+int init_chip(exec_args_t *args);
 chip8_t *get_chip(void);
 void exec_next_instruction(void);
 int execution_loop(void);

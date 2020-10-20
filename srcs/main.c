@@ -25,8 +25,9 @@ void clean_exit(void)
 int main(int argc, char *argv[])
 {
     atexit(clean_exit);
-    // TODO: Add getopt implementation
-    if (argc != 2 || init_chip(argv[1])) {
+    exec_args_t *args = parse_cmdline_args(argc, argv);
+
+    if (!args || init_chip(args)) {
         return 84;
     }
     if (execution_loop()) {

@@ -38,7 +38,7 @@ chip8_t *get_chip(void)
     return &chip;
 }
 
-int init_chip(const char *filepath)
+int init_chip(exec_args_t *args)
 {
     chip8_t *chip = get_chip();
     FILE *stream = NULL;
@@ -57,7 +57,7 @@ int init_chip(const char *filepath)
         return -1;
     }
 
-    stream = fopen(filepath, "rb");
+    stream = fopen(args->filepath, "rb");
     if (stream == NULL) {
         log_message(FATAL, "Cannot access requested file");
         return -1;
@@ -77,6 +77,8 @@ int init_chip(const char *filepath)
     chip->sp = 0;
     chip->addr_register = 0;
 
+    free(args->filepath);
+    free(args);
     return fclose(stream);
 }
 

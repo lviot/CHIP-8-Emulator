@@ -21,6 +21,7 @@ void display_help(void)
     printf("ARGUMENTS:\n");
     printf("\t-f, --file (required): path to rom\n");
     printf("\t-r, --ratio: pixel size ratio\n");
+    printf("\t-l, --log: log file path\n");
 }
 
 unsigned int make_seed(void)
@@ -57,25 +58,27 @@ exec_args_t *parse_cmdline_args(int argc, char *argv[])
             {"log", required_argument, NULL, 'l'},
             {NULL, 0, NULL, 0}
     };
-    static exec_args_t args = {
-            .filepath = NULL,
-            .ratio = 10
-    };
+    exec_args_t *args = malloc(sizeof(exec_args_t));
+    
+    if (!args) {
+        return NULL;
+    }
+    args->ratio = 10;
+    args->filepath = NULL;
 
-    while ((c = getopt_long(argc, argv, "f:r:h" ,arguments, NULL)) != -1) {
+    while ((c = getopt_long(argc, argv, "l:f:r:h", arguments, NULL)) != -1) {
         switch (c) {
             case 'f':
-                args.filepath = malloc(sizeof(char) * strlen(args.filepath));
-                if (!args.filepath) {
+                args->filepath = malloc(sizeof(char) * (strlen(optarg) + 1));
+                if (!args->filepath) {
                     return NULL;
                 }
-                //strcpy(args.filepath, optarg);
-                return NULL;
+                strcpy(args->filepath, optarg);
                 break;
             case 'r':
                 if (is_valid_number(optarg)) {
                     // TODO: strtol
-                    args.ratio = atoi(optarg);
+                    args->ratio = atoi(optarg);
                     log_message(ERROR, "Invalid value for ratio argument");
                 }
                 break;
@@ -90,5 +93,5 @@ exec_args_t *parse_cmdline_args(int argc, char *argv[])
                 return NULL;
         }
     }
-    return args.filepath ? &args : NULL;
+    return args->filepath ? args : NULL;
 }
