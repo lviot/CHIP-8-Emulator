@@ -58,8 +58,8 @@ void clear_screen(void)
 }
 
 /*
- * Actually doesn't op_DXXX a pixel, but a square
- * square size is deduced from screen size/ratio
+ * Actually doesn't draw a pixel, but a square
+ * square size is deduced from screen size and ratio chosen
  */
 void draw_pixel(ushort x, ushort y)
 {

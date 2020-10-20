@@ -9,8 +9,8 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 #include "chip8.h"
+#include "logger.h"
 
 const uchar font_sprites[80] = {
         0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
@@ -46,12 +46,20 @@ int init_chip(const char *filepath)
     srand(make_seed());
 
     chip->graphics = init_graphics(WIN_WIDTH, WIN_HEIGHT);
-    if (chip->graphics == NULL || filepath == NULL) {
+    if (chip->graphics == NULL) {
+        log_message(FATAL, "graphic module initialization failed");
+        return -1;
+    }
+
+    chip->audio = init_audio();
+    if (chip->audio == NULL) {
+        log_message(FATAL, "audio module initialization failed");
         return -1;
     }
 
     stream = fopen(filepath, "rb");
     if (stream == NULL) {
+        log_message(FATAL, "Cannot access requested file");
         return -1;
     }
 
@@ -71,12 +79,6 @@ int init_chip(const char *filepath)
     chip->sp = 0;
     chip->addr_register = 0;
 
-    FILE *dump = fopen("dump", "wb");
-
-    if (dump) {
-        fwrite(&chip->memory, sizeof(*chip->memory), MEM_SIZE, dump);
-        fclose(dump);
-    }
     return fclose(stream);
 }
 
@@ -84,6 +86,7 @@ void exec_next_instruction(void)
 {
     ushort opcode = GET_OPCODE(get_chip());
 
+    log_message(INFO, "opcode: %x", opcode);
     opcodes[(opcode & 0xF000u) >> 12u](opcode & 0x0FFFu);
 }
 
@@ -99,6 +102,8 @@ void decrease_timers(void)
 
 int execution_loop(void)
 {
+    // TODO: Sound implementation
+    //setAudioStatus(true);
     while (!catch_quit_event()) {
         exec_next_instruction();
         if (get_chip()->graphics->render_flag) {
@@ -110,5 +115,6 @@ int execution_loop(void)
         decrease_timers();
         usleep(1200);
     }
+    destroy_graphics();
     return 0;
 }

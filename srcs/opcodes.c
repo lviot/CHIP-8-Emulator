@@ -133,7 +133,7 @@ void op_8XXX(ushort args)
             break;
         case 0x4:
             // ADD
-            CARRY(chip) = (*regX + *regY > 0xff ? 0x1: 0x0);
+            CARRY(chip) = (*regX + *regY >= 0x100 ? 0x1: 0x0);
             *regX += *regY;
             break;
         case 0x5:
@@ -259,9 +259,9 @@ void op_FXXX(ushort args)
             chip->addr_register = *regX * FONT_SIZE;
             break;
         case 0x33:
-            chip->memory[chip->addr_register] = *regX % 10;
+            chip->memory[chip->addr_register] = (*regX / 100) % 10;
             chip->memory[chip->addr_register + 1] = (*regX / 10) % 10;
-            chip->memory[chip->addr_register + 2] = (*regX / 100) % 10;
+            chip->memory[chip->addr_register + 2] = *regX % 10;
             break;
         case 0x55:
             for (uint i = 0; i < ((args & 0xF00u) >> 8u); ++i) {

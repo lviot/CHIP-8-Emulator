@@ -17,7 +17,6 @@
 #define CHIP_HEIGHT     32
 #define WIN_WIDTH       CHIP_WIDTH * RATIO
 #define WIN_HEIGHT      CHIP_HEIGHT * RATIO
-#define FPS             1
 
 struct graphics_s
 {
@@ -35,6 +34,5 @@ void destroy_graphics(void);
 void draw_pixel(ushort x, ushort y);
 void clear_screen(void);
 void render(void);
-void op_DXXX_sprite(uchar x, uchar y, uchar mem_args);
 
 #endif //CHIP_8_GRAPHICS_H

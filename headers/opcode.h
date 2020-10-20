@@ -11,8 +11,7 @@
 #include "types.h"
 
 #define NB_OPCODE           35
-#define GET_OPCODE(chip)    \
-    (((chip->memory[chip->pc]) << 8u) | (chip->memory[chip->pc + 1]))
+#define GET_OPCODE(chip)    (((chip->memory[chip->pc]) << 8u) | (chip->memory[chip->pc + 1]))
 
 typedef void (*fptr)(ushort);
 

@@ -75,3 +75,21 @@ uchar wait_for_keypress(void)
         }
     }
 }
+
+int get_keyboard_mapping(char *filepath)
+{
+    FILE *stream = fopen(filepath, "r");
+    char *line = NULL;
+    size_t n = 0;
+
+    if (!stream)
+        return -1;
+
+    while (getline(&line, &n, stream) != -1) {
+        if (strlen(line) != 3)
+            continue;
+    }
+
+    fclose(stream);
+    return 0;
+}
