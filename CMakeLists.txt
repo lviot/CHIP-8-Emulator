@@ -8,15 +8,15 @@ set(CMAKE_C_STANDARD 11)
 
 find_package(SDL2 REQUIRED)
 
-include_directories(headers ${SDL2_INCLUDE_DIR})
+include_directories(./include ${SDL2_INCLUDE_DIR})
 
 add_executable(CHIP_8
         ${SDL_LIBRARY}
         srcs/main.c
         srcs/logger.c
         srcs/opcodes.c
-        headers/opcode.h
-        headers/font.h
+        include/opcode.h
+        include/font.h
         srcs/core.c
         srcs/graphics.c
         srcs/keyboard.c
