@@ -1,6 +1,4 @@
 .idea
-CMakeLists.txt
 Vagrantfile
 cmake-build-debug
 .vagrant
-roms
