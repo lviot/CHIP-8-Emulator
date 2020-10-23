@@ -8,6 +8,8 @@
 #ifndef CHIP_8_LOGGER_H
 #define CHIP_8_LOGGER_H
 
+#define _DEBUG
+
 #include <stdarg.h>
 
 enum LOGGER_CODE {

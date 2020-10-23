@@ -8,8 +8,6 @@
 #ifndef CHIP_8_CHIP8_H
 #define CHIP_8_CHIP8_H
 
-//#define _DEBUG
-
 #include "font.h"
 #include "opcode.h"
 #include "graphics.h"
