@@ -13,7 +13,7 @@
 #include "logger.h"
 
 static char *log_file_path = "log.txt";
-static FILE* log_stream = NULL;
+static FILE *log_stream = NULL;
 
 static const char *formats[] = {
         [INFO] = "[%s] \033[0;34mInfo\033[0m: %s.\n",
