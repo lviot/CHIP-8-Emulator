@@ -2,7 +2,7 @@
 ## Description
 CHIP-8 interpretor to run CHIP-8 games, written in C.
 Cross-platform compilation (see section *compilation*).
-**Work in progress**, please be indulgent 🙏 there are still a lot of bugs.
+**Work in progress**, there are still bugs and not all roms are playable.
 ### 🤖 Compilation
 ```shell script
 mkdir build && cd build           // create build directory
